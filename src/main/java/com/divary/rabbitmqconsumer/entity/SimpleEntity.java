@@ -9,8 +9,8 @@ import javax.persistence.*;
 public class SimpleEntity {
 
     @Id
-    @GeneratedValue(generator = "car_uuid", strategy = GenerationType.IDENTITY)
-    @GenericGenerator(name = "car_uuid", strategy = "uuid")
+    @GeneratedValue(generator = "uuid", strategy = GenerationType.IDENTITY)
+    @GenericGenerator(name = "uuid", strategy = "uuid")
     private String id;
 
     private String message;
