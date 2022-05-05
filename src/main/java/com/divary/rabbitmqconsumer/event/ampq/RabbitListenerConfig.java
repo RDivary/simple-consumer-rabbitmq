@@ -159,7 +159,7 @@ public class RabbitListenerConfig {
 
         try {
 
-            if (isStillAvailableConsume(message)) {
+            if (isStillAvailableConsume(message, preference.deadRetryExchange, preference.deadRetryRoutingKey)) {
 
                 Request request = new ObjectMapper().readValue(message.getBody(), Request.class);
 
@@ -181,7 +181,7 @@ public class RabbitListenerConfig {
 
     }
 
-    private boolean isStillAvailableConsume(Message payload) {
+    private boolean isStillAvailableConsume(Message payload, String exchange, String routingKey) {
 
         if (payload.getMessageProperties().getHeaders() == null){
             return true;
@@ -190,8 +190,7 @@ public class RabbitListenerConfig {
             List<HashMap> header = (ArrayList) payload.getMessageProperties().getHeaders().get(DEATH_LETTER_HEADER);
             List<HashMap> filterHeader = header
                     .stream()
-                    .filter(s -> (s.get(EXCHANGE).equals(preference.deadRetryExchange) && ((ArrayList) s.get(ROUTING_KEYS)).get(0).equals(preference.deadRetryRoutingKey) ||
-                            s.get(EXCHANGE).equals(preference.deadFanoutExchange))
+                    .filter(s -> s.get(EXCHANGE).equals(exchange) && ((ArrayList) s.get(ROUTING_KEYS)).get(0).equals(routingKey)
                             && (s.get(REASON).equals(REASON_EXPIRED) || s.get(REASON).equals(REASON_REJECTED)))
                     .collect(Collectors.toList());
 
